@@ -9,14 +9,17 @@ class FileReadWrite(private val dir: String) {
         return "${dir}${lang_name}.txt"
     }
 
-    fun read_dir(): List<String> {
+    fun read_dir(allowed_extensions: Set<String>? = null): List<String> {
         val file_names: MutableList<String> = mutableListOf()
 
         // read the directory
         File(dir).walk().forEach {
             // truncate ".txt" extension from file name
-            if(it.name.contains(".txt"))
+            if(allowed_extensions != null && it.name.length > 4 &&
+                allowed_extensions.contains(it.name.substring(it.name.length - 4))
+            ) {
                 file_names.add(it.name.substring(0, it.name.length - 4))
+            }
         }
 
         return file_names

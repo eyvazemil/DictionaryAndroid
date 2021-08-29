@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
 }
 
+apply plugin: 'com.google.gms.google-services'  // Google Services plugin
+
 android {
     compileSdk 31
 
@@ -22,6 +24,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,4 +43,9 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:28.4.0')
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
 }

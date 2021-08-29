@@ -38,7 +38,7 @@ class FileReadWriteTest : TestCase() {
             create_dummy_file("${dummy_dir}${i}.txt")
 
         // read the directory
-        val list: List<String> = file_read_write.read_dir()
+        val list: List<String> = file_read_write.read_dir(setOf(".txt"))
         for(i in 0..4)
             assert(list_file_names.contains(list[i]))
 

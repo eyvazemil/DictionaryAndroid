@@ -16,7 +16,7 @@ class DictionaryManager(private val dir: String) {
         web_service.initialize()
 
         // read the language files and write into the dictionary object
-        file_read_write.read_dir().forEach {
+        file_read_write.read_dir(setOf(".txt")).forEach {
             m_dictionary.add_language(it)
         }
     }
@@ -135,6 +135,9 @@ class DictionaryManager(private val dir: String) {
             // set new language as chosen one
             m_chosen_language = lang_name
             m_chosen_title = null
+
+            // save file
+            close_file(lang_name)
         }
 
         return status
