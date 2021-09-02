@@ -4,8 +4,6 @@ import com.example.dictionary.Miscelaneous.EnumStatus
 
 class Title(title_name: String, private var language: LanguageModifier) {
     var m_title_name: String = ""
-        get() = field
-        private set
 
     var m_map_words:  MutableMap<String, Word> = mutableMapOf()
         get() = field

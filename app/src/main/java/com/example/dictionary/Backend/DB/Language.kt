@@ -30,14 +30,14 @@ class Language(val m_lang_name: String): LanguageModifier() {
 
     fun remove_title(title_name: String): EnumStatus {
         // check if chosen title doesn't exist
-        val chosen_title: Title = find_title(title_name) ?: return EnumStatus.DOES_NOT_EXIST
+        find_title(title_name) ?: return EnumStatus.DOES_NOT_EXIST
 
         // it is not possible to remove default title
         if(title_name == "")
             return EnumStatus.DEFAULT_TITLE_REMOVAL
 
         // remove a title from map
-        remove_helper(chosen_title)
+        remove_helper(title_name)
 
         // set the language modified flag to true
         lang_modify()
@@ -61,11 +61,14 @@ class Language(val m_lang_name: String): LanguageModifier() {
         if(chosen_new_title != null)
             return EnumStatus.ALREADY_EXISTS
 
-        // remove an old title
-        remove_helper(chosen_old_title)
+        // change title name
+        chosen_old_title.m_title_name = new_title_name
 
-        // add a new title
-        add_helper(new_title_name)
+        // add a title with the new name to the map
+        add_helper(new_title_name, chosen_old_title)
+
+        // remove an old title
+        remove_helper(old_title_name)
 
         // set the language modified flag to true
         lang_modify()
@@ -73,13 +76,16 @@ class Language(val m_lang_name: String): LanguageModifier() {
         return EnumStatus.CHANGE_SUCCESS
     }
 
-    private fun add_helper(title_name: String) {
-        // add new title into the map
-        this.m_map_titles.put(title_name, Title(title_name, this))
+    private fun add_helper(title_name: String, title: Title? = null) {
+        // add title into the map
+        if(title == null)
+            this.m_map_titles.put(title_name, Title(title_name, this))
+        else
+            this.m_map_titles.put(title_name, title)
     }
 
-    private fun remove_helper(chosen_title: Title) {
+    private fun remove_helper(title_name: String) {
         // remove the title from the map
-        this.m_map_titles.remove(chosen_title.m_title_name)
+        this.m_map_titles.remove(title_name)
     }
 }

@@ -76,9 +76,9 @@ class DictionaryManagerTest : TestCase() {
 
         dictionary_manager.choose_title("00")
 
-        assert(dictionary_manager.change_title_name("02") == EnumStatus.CHANGE_SUCCESS)
-        assert(dictionary_manager.change_title_name("") == EnumStatus.ALREADY_EXISTS)
-        assert(dictionary_manager.change_title_name("00") == EnumStatus.CHANGE_SUCCESS)
+        assert(dictionary_manager.change_title_name("00", "02") == EnumStatus.CHANGE_SUCCESS)
+        assert(dictionary_manager.change_title_name("02", "") == EnumStatus.ALREADY_EXISTS)
+        assert(dictionary_manager.change_title_name("02", "00") == EnumStatus.CHANGE_SUCCESS)
 
         assert(dictionary_manager.remove_title("01") == EnumStatus.DOES_NOT_EXIST)
         assert(dictionary_manager.remove_title("00") == EnumStatus.REMOVE_SUCCESS)

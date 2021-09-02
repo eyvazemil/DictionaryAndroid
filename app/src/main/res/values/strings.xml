@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Dictionary</string>
     <string name="add_language">Add language</string>
+    <string name="add_title">Add title</string>
+    <string name="default_title">&lt;None&gt;</string>
+    <string name="edit_button">Edit</string>
+    <string name="change_title">Change</string>
+    <string name="remove_title">Remove</string>
+    <string name="confirm_title_removal">Are you sure that you want to remove title</string>
 </resources>

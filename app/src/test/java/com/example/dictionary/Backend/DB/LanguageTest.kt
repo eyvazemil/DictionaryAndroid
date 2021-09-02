@@ -28,8 +28,14 @@ class LanguageTest : TestCase() {
         assert(language.add_title("A") == EnumStatus.ADD_SUCCESS)
         assert(language.add_title("B") == EnumStatus.ADD_SUCCESS)
 
+        assert(language.m_map_titles["A"]?.add_word("Hello", "World") == EnumStatus.ADD_SUCCESS)
+
         assert(language.change_title("C", "A") == EnumStatus.DOES_NOT_EXIST)
         assert(language.change_title("B", "A") == EnumStatus.ALREADY_EXISTS)
         assert(language.change_title("A", "F") == EnumStatus.CHANGE_SUCCESS)
+
+        assert(language.m_map_titles["F"]!!.m_map_words["Hello"]!!.m_word == "Hello" &&
+                language.m_map_titles["F"]!!.m_map_words["Hello"]!!.m_definition == "World"
+        )
     }
 }

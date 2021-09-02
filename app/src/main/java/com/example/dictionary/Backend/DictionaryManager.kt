@@ -5,8 +5,15 @@ import com.example.dictionary.Miscelaneous.EnumStatus
 
 class DictionaryManager(private val dir: String) {
     private var m_dictionary: Dictionary = Dictionary()
-    private var m_chosen_language: String? = null
-    private var m_chosen_title: String? = null
+
+    var m_chosen_language: String? = null
+        get() = field
+        private set
+
+    var m_chosen_title: String? = null
+        get() = field
+        private set
+
     private val dir_languages: String = "${dir}../Languages/"
     private val file_read_write: FileReadWrite = FileReadWrite(dir_languages)
     private val web_service: WebService = WebService(dir_languages)
@@ -86,7 +93,7 @@ class DictionaryManager(private val dir: String) {
 
     fun get_languages(): List<String> {
         val languages: MutableList<String> = mutableListOf()
-        m_dictionary.m_map_languages.keys.forEach {
+        m_dictionary.m_map_languages.keys.toSortedSet().forEach {
             languages.add(it)
         }
 
@@ -97,8 +104,8 @@ class DictionaryManager(private val dir: String) {
         val titles: MutableList<String> = mutableListOf()
 
         if(m_chosen_language != null) {
-            m_dictionary.find_language(m_chosen_language!!)?.m_map_titles!!.values.forEach {
-                titles.add(it.m_title_name)
+            m_dictionary.find_language(m_chosen_language!!)?.m_map_titles!!.keys.toSortedSet().forEach {
+                titles.add(it)
             }
         }
 
@@ -172,11 +179,11 @@ class DictionaryManager(private val dir: String) {
         return status
     }
 
-    fun change_title_name(title_name: String): EnumStatus {
-        val status: EnumStatus = m_dictionary.find_language(m_chosen_language!!)?.change_title(m_chosen_title!!, title_name)!!
+    fun change_title_name(old_title_name: String, new_title_name: String): EnumStatus {
+        val status: EnumStatus = m_dictionary.find_language(m_chosen_language!!)?.change_title(old_title_name, new_title_name)!!
 
         if(status == EnumStatus.CHANGE_SUCCESS)
-            m_chosen_title = title_name
+            m_chosen_title = null
 
         return status
     }

@@ -10,7 +10,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.example.dictionary.Backend.DictionaryManager
-import com.example.dictionary.Frontend.Language
+import com.example.dictionary.Language
 import com.example.dictionary.Miscelaneous.EnumStatus
 
 
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         // get scroll view reference by id
         scroll_languages = findViewById(R.id.languages_layout)
 
-        // get languages list and add it as a button to the layout
+        // get languages list and add them as a button to the layout
         fill_scroll_window()
     }
 
@@ -44,19 +44,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun button_add_language_on_click(view: View?) {
-        // create a dialog
-        val dialog: AlertDialog.Builder = AlertDialog.Builder(this)
-        dialog.setTitle("Add new language")
-
         // create edit text for dialog
         val input_text: EditText = EditText(this)
         input_text.inputType = InputType.TYPE_TEXT_VARIATION_PERSON_NAME
 
-        // attach input to dialog
-        dialog.setView(input_text)
+        // create a dialog
+        val dialog = DialogAdd("Add new language", this, input_text)
 
-        // add buttons to dialog
-        dialog.setPositiveButton("Add") { dialogInterface, i ->
+        dialog.dialog.setPositiveButton("Add") { dialogInterface, i ->
             val new_lang_name: String = input_text.text.toString()
 
             // add new language to the dictionary manager
@@ -74,15 +69,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        dialog.setNegativeButton("Cancel") { dialogInterface, i ->
-            dialogInterface.cancel()
-        }
-
         // show dialog
         dialog.show()
     }
 
-    fun button_choose_lang(view: View?) {
+    fun button_choose_lang_callback(view: View?) {
         // get button
         val button_clicked: Button = view as Button
 
@@ -95,19 +86,19 @@ class MainActivity : AppCompatActivity() {
         scroll_languages?.removeAllViews()
 
         // add language button to the scroll window
-        dictionary_manager.get_languages().toSortedSet().forEach {
-            val lang_button: Button = Button(applicationContext)
+        dictionary_manager.get_languages().forEach {
+            val button_lang: Button = Button(applicationContext)
 
             //set button text
-            lang_button.text = it
+            button_lang.text = it
 
             // set language listener
-            lang_button.setOnClickListener { ti ->
-                button_choose_lang(ti)
+            button_lang.setOnClickListener { ti ->
+                button_choose_lang_callback(ti)
             }
 
             // add button to the scroll window
-            scroll_languages?.addView(lang_button)
+            scroll_languages?.addView(button_lang)
         }
     }
 
@@ -117,6 +108,6 @@ class MainActivity : AppCompatActivity() {
 
         // create language activity
         val intent = Intent(this, Language::class.java)
-        //startActivity(intent)
+        startActivity(intent)
     }
 }
