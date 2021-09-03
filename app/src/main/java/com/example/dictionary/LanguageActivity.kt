@@ -11,7 +11,7 @@ import com.example.dictionary.Frontend.ButtonLayoutTitle
 import com.example.dictionary.Frontend.ScrollableWindowInterface
 import com.example.dictionary.Miscelaneous.EnumStatus
 
-class Language : AppCompatActivity(), ScrollableWindowInterface, ActivityOpenerInterface {
+class LanguageActivity : AppCompatActivity(), ScrollableWindowInterface, ActivityOpenerInterface {
     override var scroll_window: LinearLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

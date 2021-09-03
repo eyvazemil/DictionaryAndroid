@@ -1,16 +1,12 @@
 package com.example.dictionary
 
-import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import com.example.dictionary.Backend.DictionaryManager
-import com.example.dictionary.Language
 import com.example.dictionary.Miscelaneous.EnumStatus
 
 
@@ -107,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         dictionary_manager.choose_language(lang_name)
 
         // create language activity
-        val intent = Intent(this, Language::class.java)
+        val intent = Intent(this, LanguageActivity::class.java)
         startActivity(intent)
     }
 }

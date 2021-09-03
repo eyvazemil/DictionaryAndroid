@@ -4,7 +4,8 @@
     <string name="add_title">Add title</string>
     <string name="default_title">&lt;None&gt;</string>
     <string name="edit_button">Edit</string>
-    <string name="change_title">Change</string>
-    <string name="remove_title">Remove</string>
+    <string name="open">Open</string>
+    <string name="change">Change</string>
+    <string name="remove">Remove</string>
     <string name="confirm_title_removal">Are you sure that you want to remove title</string>
 </resources>
