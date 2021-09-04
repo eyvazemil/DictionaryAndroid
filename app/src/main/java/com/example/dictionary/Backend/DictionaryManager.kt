@@ -43,11 +43,11 @@ class DictionaryManager(private val dir: String) {
 
             // add title
             if(m_dictionary.find_language(lang_name)!!.find_title(title_name) == null)
-                m_dictionary.find_language(lang_name)!!.add_title(title_name)
+                m_dictionary.find_language(lang_name)!!.add_title(title_name, true)
 
             // add words into title
             it.value.m_list_words.forEach {
-                m_dictionary.find_language(lang_name)!!.find_title(title_name)!!.add_word(it.m_word, it.m_definition)
+                m_dictionary.find_language(lang_name)!!.find_title(title_name)!!.add_word(it.m_word, it.m_definition, true)
             }
         }
     }
@@ -63,13 +63,13 @@ class DictionaryManager(private val dir: String) {
 
         // write current language file only if the language was actually modified
         if(m_chosen_language != null) {
-            // free memory from this language
-            m_dictionary.remove_language(m_chosen_language!!)
-            m_dictionary.add_language(m_chosen_language!!)
-
             // write the file only if language was modified
             if(m_dictionary.find_language(m_chosen_language!!)?.m_flag_modified!!)
                 close_file(m_chosen_language!!)
+
+            // free memory from this language
+            m_dictionary.remove_language(m_chosen_language!!)
+            m_dictionary.add_language(m_chosen_language!!)
         }
 
         // choose the language
@@ -124,27 +124,23 @@ class DictionaryManager(private val dir: String) {
         return words
     }
 
+    fun get_words_count(): Int {
+        var count = 0
+
+        if(m_chosen_title != null)
+            count = m_dictionary.find_language(m_chosen_language!!)?.find_title(m_chosen_title!!)?.m_list_words!!.size
+
+        return count
+    }
+
     fun add_language(lang_name: String): EnumStatus {
         val status: EnumStatus = m_dictionary.add_language(lang_name)
 
         // to modify the language, any operation should be done on it
         if(status == EnumStatus.ADD_SUCCESS) {
-            // add dummy title to the new language and remove it, so that modified flag is changed
-            val title_name: String = "<Testing_Purposes>"
-            for(i in 0..1000) {
-                if(m_dictionary.find_language(lang_name)!!.find_title("${title_name}$i") == null) {
-                    m_dictionary.find_language(lang_name)!!.add_title("${title_name}$i")
-                    m_dictionary.find_language(lang_name)!!.remove_title("${title_name}$i")
-                    break
-                }
-            }
-
             // set new language as chosen one
             m_chosen_language = lang_name
             m_chosen_title = null
-
-            // save file
-            close_file(lang_name)
         }
 
         return status

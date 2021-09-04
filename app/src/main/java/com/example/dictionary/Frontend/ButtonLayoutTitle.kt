@@ -38,14 +38,14 @@ class ButtonLayoutTitle(context: Context, val title_name: String, val scrollable
         pop_up.setOnMenuItemClickListener { item ->
             onMenuItemClick(item)
         }
-        pop_up.inflate(R.menu.menu_edit_title)
+        pop_up.inflate(R.menu.menu_edit)
         pop_up.show()
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
-        if(item!!.itemId == R.id.open_title) // open title activity with all words in it
+        if(item!!.itemId == R.id.open) // open title activity with all words in it
             activity_opener.open_activity(title_name)
-        else if(item!!.itemId == R.id.change_title) { // create dialog for changing title name
+        else if(item!!.itemId == R.id.change) { // create dialog for changing title name
             val input_text = EditText(context)
             input_text.inputType = InputType.TYPE_TEXT_VARIATION_PERSON_NAME
             input_text.setText(title_name)

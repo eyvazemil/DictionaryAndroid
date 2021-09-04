@@ -12,9 +12,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher1"
+        android:icon="@mipmap/ic_launcher_dictionar"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round1"
+        android:roundIcon="@mipmap/ic_launcher_dictionar_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Dictionary">
         <activity

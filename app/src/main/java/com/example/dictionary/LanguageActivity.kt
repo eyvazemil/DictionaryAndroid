@@ -1,6 +1,7 @@
 package com.example.dictionary
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
@@ -69,8 +70,6 @@ class LanguageActivity : AppCompatActivity(), ScrollableWindowInterface, Activit
         // empty scroll window
         scroll_window?.removeAllViews()
 
-        Log.d("Point:","__HERE__")
-
         // add language button to the scroll window
         MainActivity.dictionary_manager.get_titles().forEach { title_name ->
             // create layout for title
@@ -86,7 +85,7 @@ class LanguageActivity : AppCompatActivity(), ScrollableWindowInterface, Activit
         MainActivity.dictionary_manager.choose_title(name)
 
         // create language activity
-        //val intent = Intent(this, Title::class.java)
-        //startActivity(intent)
+        val intent = Intent(this, TitleActivity::class.java)
+        startActivity(intent)
     }
 }

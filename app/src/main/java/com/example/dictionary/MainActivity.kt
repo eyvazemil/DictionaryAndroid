@@ -33,10 +33,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         // finish dictionary manager
         dictionary_manager.finish()
+
+        super.onDestroy()
     }
 
     fun button_add_language_on_click(view: View?) {

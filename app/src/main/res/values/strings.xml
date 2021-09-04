@@ -2,10 +2,13 @@
     <string name="app_name">Dictionary</string>
     <string name="add_language">Add language</string>
     <string name="add_title">Add title</string>
+    <string name="add_word">Add word</string>
     <string name="default_title">&lt;None&gt;</string>
     <string name="edit_button">Edit</string>
     <string name="open">Open</string>
     <string name="change">Change</string>
     <string name="remove">Remove</string>
     <string name="confirm_title_removal">Are you sure that you want to remove title</string>
+    <string name="dialog_word">Word</string>
+    <string name="dialog_definition">Definition</string>
 </resources>

@@ -21,15 +21,16 @@ class Title(title_name: String, private var language: LanguageModifier) {
         return this.m_map_words[word]
     }
 
-    fun add_word(word: String, definition: String): EnumStatus {
+    fun add_word(word: String, definition: String, flag_read: Boolean = false): EnumStatus {
         if(find_word(word) != null)
             return EnumStatus.ALREADY_EXISTS
 
-        // add a new word
-        add_helper(word, definition)
-
         // set the language modified flag to true
-        language.lang_modify()
+        if(!flag_read) {
+            language.lang_modify()
+            add_helper(word, definition)
+        } else
+            add_helper(word, definition, true)
 
         return EnumStatus.ADD_SUCCESS
     }
@@ -71,9 +72,12 @@ class Title(title_name: String, private var language: LanguageModifier) {
         return EnumStatus.CHANGE_SUCCESS
     }
 
-    private fun add_helper(word: String, definition: String) {
+    private fun add_helper(word: String, definition: String, flag_read: Boolean = false) {
         // add new word into the list
-        this.m_list_words.add(0, Word(word, definition))
+        if(!flag_read)
+            this.m_list_words.add(0, Word(word, definition))
+        else
+            this.m_list_words.add(Word(word, definition))
 
         // add new word into the map
         this.m_map_words.put(word, this.m_list_words[0])

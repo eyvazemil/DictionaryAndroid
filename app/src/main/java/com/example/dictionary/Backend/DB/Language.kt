@@ -15,7 +15,7 @@ class Language(val m_lang_name: String): LanguageModifier() {
         return this.m_map_titles[title_name]
     }
 
-    fun add_title(title_name: String): EnumStatus {
+    fun add_title(title_name: String, flag_read: Boolean = false): EnumStatus {
         if(find_title(title_name) != null)
             return EnumStatus.ALREADY_EXISTS
 
@@ -23,7 +23,8 @@ class Language(val m_lang_name: String): LanguageModifier() {
         add_helper(title_name)
 
         // set the language modified flag to true
-        lang_modify()
+        if(!flag_read)
+            lang_modify()
 
         return EnumStatus.ADD_SUCCESS
     }

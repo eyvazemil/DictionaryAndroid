@@ -1,5 +1,6 @@
 package com.example.dictionary
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -8,30 +9,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.core.view.marginTop
 
-class DialogAdd(dialog_title: String, context: Context, dialog_view: View) {
+class DialogWord(dialog_title: String, context: Context, word: Pair<String, String>?) {
     val dialog: AlertDialog.Builder = AlertDialog.Builder(context)
+    var dialog_input_word: EditText? = null
+    var dialog_input_definition: EditText? = null
 
     init {
-        // create linear layout for dialog view
-        val layout = LinearLayout(context, null, LinearLayout.VERTICAL)
-
-        // layout parameters for dialog view
-        val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-        params.topMargin = 30
-        params.bottomMargin = 10
-        params.leftMargin = 20
-        params.rightMargin = 20
-
-        // set margins for dialog view
-        dialog_view.layoutParams = params
-
-        // put dialog view in layout
-        layout.addView(dialog_view)
+        val layout_inflater = LayoutInflater.from(context)
+        val layout = layout_inflater.inflate(R.layout.dialog_word, null)
 
         // attach view to dialog
         dialog.setView(layout)
+
+        // set inputs
+        dialog_input_word = layout.findViewById(R.id.dialog_input_word)
+        dialog_input_definition = layout.findViewById(R.id.dialog_input_definition)
+        if(word != null) {
+            dialog_input_word?.hint = word.first
+            dialog_input_definition?.hint = word.second
+        }
 
         // add dialog title
         dialog.setTitle(dialog_title)
