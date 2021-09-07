@@ -18,13 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Dictionary">
         <activity
-            android:name=".TitleActivity"
-            android:exported="true" />
-        <activity
-            android:name=".LanguageActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +26,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TitleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".LanguageActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

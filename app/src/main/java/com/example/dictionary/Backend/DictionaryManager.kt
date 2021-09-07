@@ -16,12 +16,8 @@ class DictionaryManager(private val dir: String) {
 
     private val dir_languages: String = "${dir}../Languages/"
     private val file_read_write: FileReadWrite = FileReadWrite(dir_languages)
-    private val web_service: WebService = WebService(dir_languages)
 
     fun initialize() {
-        // sync with languages in the web
-        web_service.initialize()
-
         // read the language files and write into the dictionary object
         file_read_write.read_dir(setOf(".txt")).forEach {
             m_dictionary.add_language(it)
@@ -32,9 +28,6 @@ class DictionaryManager(private val dir: String) {
         // if any language is open and modified, write it into the file
         if(m_chosen_language != null && m_dictionary.find_language(m_chosen_language!!)?.m_flag_modified!!)
             close_file(m_chosen_language!!)
-
-        // sync with languages in the web
-        web_service.finish()
     }
 
     private fun open_file(lang_name: String) {

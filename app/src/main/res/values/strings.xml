@@ -11,4 +11,6 @@
     <string name="confirm_title_removal">Are you sure that you want to remove title</string>
     <string name="dialog_word">Word</string>
     <string name="dialog_definition">Definition</string>
+    <string name="google_sign_in">Sign in</string>
+    <string name="log_out">Log out</string>
 </resources>

@@ -3,26 +3,47 @@ package com.example.dictionary
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.FileUtils.copy
 import android.text.InputType
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import com.example.dictionary.Backend.DictionaryManager
+import com.example.dictionary.Backend.FileReadWrite
 import com.example.dictionary.Miscelaneous.EnumStatus
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import java.io.File
+import kotlin.math.sign
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     var scroll_languages: LinearLayout? = null
+    private lateinit var dir: String
 
     companion object {
-        val dir: String = "/data/data/com.example.dictionary/files/Languages/"
-        val dictionary_manager: DictionaryManager = DictionaryManager(dir)
+        private const val TAG = "MainActivity"
+        lateinit var dictionary_manager: DictionaryManager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // create the directory with languages if it doesn't exist
+        dir = "${filesDir.path}/Languages/"
+        if(!File(dir).exists()) {
+            Log.d(TAG, FileReadWrite(dir).read_dir(setOf(".txt")).toString())
+            File(dir).mkdirs()
+        }
+
         // initialize Dictionary Manager object
+        dictionary_manager = DictionaryManager(dir)
         dictionary_manager.initialize()
 
         // get scroll view reference by id
@@ -30,6 +51,51 @@ class MainActivity : AppCompatActivity() {
 
         // get languages list and add them as a button to the layout
         fill_scroll_window()
+    }
+
+    fun button_sign_out_callback(view: View?) {
+        val pop_up = PopupMenu(this, view)
+        pop_up.setOnMenuItemClickListener { item ->
+            onMenuItemClick(item)
+        }
+        pop_up.inflate(R.menu.menu_log_out)
+        pop_up.show()
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        if(item?.itemId == R.id.menu_item_log_out)
+            sign_out()
+        else if(item?.itemId == R.id.menu_item_user)
+            dialog_user()
+
+        return true
+    }
+
+    private fun sign_out() {
+        Log.i(TAG, "Sign out")
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        val mGoogleSignInClient = GoogleSignIn.getClient(this,gso)
+
+        mGoogleSignInClient.signOut()
+
+        // sign out current user
+        FirebaseAuth.getInstance().signOut()
+
+        // go to the Google sign in page
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun dialog_user() {
+        val text_user = TextView(this)
+        text_user.text = Firebase.auth.currentUser?.email
+        val dialog = DialogAdd("User", this, text_user)
+        dialog.show()
     }
 
     override fun onDestroy() {
