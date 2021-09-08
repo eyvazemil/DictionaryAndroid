@@ -13,6 +13,7 @@ import android.widget.*
 import com.example.dictionary.Backend.DictionaryManager
 import com.example.dictionary.Backend.FileReadWrite
 import com.example.dictionary.Miscelaneous.EnumStatus
+import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -74,21 +75,16 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     private fun sign_out() {
         Log.i(TAG, "Sign out")
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        val mGoogleSignInClient = GoogleSignIn.getClient(this,gso)
+        AuthUI.getInstance().signOut(this).addOnCompleteListener { task ->
+            if(task.isSuccessful) {
+                Log.i(TAG, "Signed out successfully")
 
-        mGoogleSignInClient.signOut()
-
-        // sign out current user
-        FirebaseAuth.getInstance().signOut()
-
-        // go to the Google sign in page
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else
+                Log.w(TAG, "Signing out failed")
+        }
     }
 
     private fun dialog_user() {
