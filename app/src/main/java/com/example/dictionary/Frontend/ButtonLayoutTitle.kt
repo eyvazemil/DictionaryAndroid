@@ -6,7 +6,6 @@ import android.text.InputType
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import com.example.dictionary.DialogAdd
 import com.example.dictionary.MainActivity
 import com.example.dictionary.Miscelaneous.EnumStatus
 import com.example.dictionary.R

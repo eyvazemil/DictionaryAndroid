@@ -1,5 +1,6 @@
 package com.example.dictionary.Backend
 
+import android.util.Log
 import com.example.dictionary.Backend.DB.*
 import com.example.dictionary.Miscelaneous.EnumStatus
 
@@ -14,14 +15,22 @@ class DictionaryManager(private val dir: String) {
         get() = field
         private set
 
-    private val dir_languages: String = "${dir}../Languages/"
+    val m_modified_languages: MutableList<String> = mutableListOf()
+    private val dir_languages: String = dir
     private val file_read_write: FileReadWrite = FileReadWrite(dir_languages)
+
+    companion object {
+        private val TAG = "DictionaryManager"
+        val m_file_extension = ".txt"
+    }
 
     fun initialize() {
         // read the language files and write into the dictionary object
-        file_read_write.read_dir(setOf(".txt")).forEach {
+        file_read_write.read_dir(setOf(m_file_extension)).forEach {
             m_dictionary.add_language(it)
         }
+
+        Log.d(TAG, "Dictionary manager initialization went successfully with ${m_dictionary.m_map_languages.size} languages added")
     }
 
     fun finish() {
@@ -46,7 +55,11 @@ class DictionaryManager(private val dir: String) {
     }
 
     private fun close_file(lang_name: String) {
+        // write the language to the file
         file_read_write.write(m_dictionary.find_language(lang_name)!!)
+
+        // write this language name to the list of modified languages
+        m_modified_languages.add(lang_name)
     }
 
     fun choose_language(lang_name: String): EnumStatus {

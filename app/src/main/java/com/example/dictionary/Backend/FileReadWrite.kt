@@ -1,12 +1,50 @@
 package com.example.dictionary.Backend
 
+import android.util.Log
 import com.example.dictionary.Backend.DB.*
 import java.io.File
 import java.io.FileWriter
+import java.util.*
 
 class FileReadWrite(private val dir: String) {
+    private val file_extension = DictionaryManager.m_file_extension
+
+    private companion object {
+        val TAG = "FileReadWrite"
+
+        fun refactor(line: String, flag_chars: Set<Char>): String {
+            // string where refactored line will be stored
+            var refactored_str: String = ""
+
+            Log.d(TAG, "Refactor: ${line.length}")
+
+            // refactor the line
+            for(i in line.indices) {
+                if(flag_chars.contains(line[i]))
+                    refactored_str += '\\'
+                refactored_str += line[i]
+            }
+
+            return refactored_str
+        }
+
+        fun derefactor(line: String, flag_chars: Set<Char>): String {
+            // string where refactored line will be stored
+            var derefactored_str: String = ""
+
+            // refactor the line
+            for(i in line.indices) {
+                if(i != line.length - 1 && line[i] == '\\' && flag_chars.contains(line[i + 1]))
+                    continue
+                derefactored_str += line[i]
+            }
+
+            return derefactored_str
+        }
+    }
+
     private fun set_language_path(lang_name: String): String {
-        return "${dir}${lang_name}.txt"
+        return "${dir}${lang_name}$file_extension"
     }
 
     fun read_dir(allowed_extensions: Set<String>? = null): List<String> {
@@ -16,13 +54,25 @@ class FileReadWrite(private val dir: String) {
         File(dir).walk().forEach {
             // truncate ".txt" extension from file name
             if(allowed_extensions != null && it.name.length > 4 &&
-                allowed_extensions.contains(it.name.substring(it.name.length - 4))
+                allowed_extensions.contains(it.name.substring(it.name.length - file_extension.length))
             ) {
-                file_names.add(it.name.substring(0, it.name.length - 4))
+                file_names.add(it.name.substring(0, it.name.length - file_extension.length))
             }
         }
 
+        //Log.d(TAG, "Files count in directory $dir: ${file_names.size}")
+
         return file_names
+    }
+
+    fun get_modification_dates(allowed_extensions: Set<String>? = null): Map<String, Date> {
+        val map_files: MutableMap<String, Date> = mutableMapOf()
+
+        read_dir(allowed_extensions).forEach { lang_name ->
+            map_files.put(lang_name, Date(File(set_language_path(lang_name)).lastModified()))
+        }
+
+        return map_files
     }
 
     fun read(lang_name: String): Language {
@@ -72,8 +122,14 @@ class FileReadWrite(private val dir: String) {
             file_string += "$refactored_title_name:\n"
 
             // traverse through words in this title
-            for(i in (title.m_list_words.size - 1) downTo 0)
-                file_string += refactor(title.m_list_words[i].m_word, setOf(':', '-')) + " - " + refactor(title.m_list_words[i].m_definition, setOf(':', '-')) + "\n"
+            for(i in (title.m_list_words.size - 1) downTo 0) {
+                Log.d(TAG, "Word: ${title.m_list_words[i].m_word}")
+
+                val word: String = refactor(title.m_list_words[i].m_word, setOf('-'))
+                val definition: String = refactor(title.m_list_words[i].m_definition, setOf(':'))
+
+                file_string += "$word - ${definition}\n"
+            }
         }
 
         // write the refactored string into the file
@@ -84,33 +140,5 @@ class FileReadWrite(private val dir: String) {
 
         // close file
         fileWriter.close()
-    }
-
-    private fun refactor(line: String, flag_chars: Set<Char>): String {
-        // string where refactored line will be stored
-        var refactored_str: String = ""
-
-        // refactor the line
-        for(i in line.indices) {
-            if(flag_chars.contains(line[i]))
-                refactored_str += '\\'
-            refactored_str += line[i]
-        }
-
-        return refactored_str
-    }
-
-    private fun derefactor(line: String, flag_chars: Set<Char>): String {
-        // string where refactored line will be stored
-        var derefactored_str: String = ""
-
-        // refactor the line
-        for(i in line.indices) {
-            if(i != line.length - 1 && line[i] == '\\' && flag_chars.contains(line[i + 1]))
-                continue
-            derefactored_str += line[i]
-        }
-
-        return derefactored_str
     }
 }

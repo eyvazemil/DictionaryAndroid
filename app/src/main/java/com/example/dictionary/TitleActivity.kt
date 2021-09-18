@@ -2,13 +2,8 @@ package com.example.dictionary
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.InputType
-import android.util.Log
 import android.widget.*
-import com.example.dictionary.Frontend.ActivityOpenerInterface
-import com.example.dictionary.Frontend.ButtonLayoutTitle
-import com.example.dictionary.Frontend.ButtonLayoutWord
-import com.example.dictionary.Frontend.ScrollableWindowInterface
+import com.example.dictionary.Frontend.*
 import com.example.dictionary.Miscelaneous.EnumStatus
 
 class TitleActivity : AppCompatActivity(), ScrollableWindowInterface {
@@ -47,7 +42,7 @@ class TitleActivity : AppCompatActivity(), ScrollableWindowInterface {
                 if (status == EnumStatus.ALREADY_EXISTS)
                     Toast.makeText(this, "Word $new_word already exists", Toast.LENGTH_LONG).show()
                 else {
-                    Toast.makeText(this, "Word $new_definition was added successfully", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Word $new_word was added successfully", Toast.LENGTH_LONG).show()
 
                     // update scroll window
                     fill_scroll_window()

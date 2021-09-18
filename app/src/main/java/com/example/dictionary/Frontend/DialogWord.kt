@@ -1,14 +1,10 @@
-package com.example.dictionary
+package com.example.dictionary.Frontend
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
-import android.text.InputType
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.EditText
-import android.widget.LinearLayout
+import com.example.dictionary.R
 
 class DialogWord(dialog_title: String, context: Context, word: Pair<String, String>?) {
     val dialog: AlertDialog.Builder = AlertDialog.Builder(context)

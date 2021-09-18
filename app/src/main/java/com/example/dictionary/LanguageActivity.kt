@@ -1,14 +1,13 @@
 package com.example.dictionary
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.widget.*
 import com.example.dictionary.Frontend.ActivityOpenerInterface
 import com.example.dictionary.Frontend.ButtonLayoutTitle
+import com.example.dictionary.Frontend.DialogAdd
 import com.example.dictionary.Frontend.ScrollableWindowInterface
 import com.example.dictionary.Miscelaneous.EnumStatus
 

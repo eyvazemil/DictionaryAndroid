@@ -1,4 +1,4 @@
-package com.example.dictionary
+package com.example.dictionary.Frontend
 
 import android.app.AlertDialog
 import android.content.Context

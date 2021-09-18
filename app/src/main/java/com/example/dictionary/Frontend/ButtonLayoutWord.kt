@@ -1,15 +1,10 @@
 package com.example.dictionary.Frontend
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.text.InputType
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import com.example.dictionary.DialogAdd
-import com.example.dictionary.DialogWord
 import com.example.dictionary.MainActivity
 import com.example.dictionary.Miscelaneous.EnumStatus
 import com.example.dictionary.R

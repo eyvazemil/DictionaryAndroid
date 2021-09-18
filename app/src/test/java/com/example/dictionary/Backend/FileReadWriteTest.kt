@@ -124,4 +124,15 @@ class FileReadWriteTest : TestCase() {
 
         remove_dummy_dir(dummy_dir)
     }
+
+    @Test
+    fun testGetModificationDates() {
+        create_dummy_dir(dummy_dir)
+
+        create_dummy_file("${dummy_dir}dummy_file.txt")
+
+        println("Dummy file's last modification date: ${file_read_write.get_modification_dates(setOf(".txt"))}")
+
+        remove_dummy_dir(dummy_dir)
+    }
 }
