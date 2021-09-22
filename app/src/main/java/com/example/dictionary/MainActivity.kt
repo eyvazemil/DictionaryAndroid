@@ -20,6 +20,8 @@ import com.google.firebase.ktx.Firebase
 import java.io.File
 import android.app.ProgressDialog
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -46,11 +48,14 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
             File(dir).mkdirs()
         }
 
+        set_button_log_out()
+
         // initialize file reader and writer to get the language files' last modification time stamps
         file_read_write = FileReadWrite(dir)
 
         // create a progress dialog that will run till language files are downloaded from firebase
         val progress_dialog = create_progress_dialog()
+        progress_dialog.show()
 
         Log.d(TAG, "Progress dialog started")
 
@@ -74,6 +79,17 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
         // get languages list and add them as a button to the layout
         fill_scroll_window()
+    }
+
+    fun set_button_log_out() {
+        // get google user photo url
+        val url_photo = FirebaseAuth.getInstance().currentUser?.photoUrl
+
+        // get button for user log out
+        val button_sign_out: ImageButton = findViewById(R.id.button_sign_out)
+
+        // set drawable image with Glide
+        Glide.with(this).load(url_photo).circleCrop().into(button_sign_out)
     }
 
     fun create_progress_dialog(): ProgressDialog {
@@ -103,6 +119,19 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
             sign_out()
         else if(item?.itemId == R.id.menu_item_user)
             dialog_user()
+        else if(item?.itemId == R.id.menu_item_close) {
+            // finish dictionary manager
+            dictionary_manager.finish()
+
+            // timestamps for all language files on the device
+            val map_timestamps = file_read_write.get_modification_dates(setOf(DictionaryManager.m_file_extension))
+
+            // sync with firebase
+            cloud_firestore.push(map_timestamps, dictionary_manager.m_modified_languages)
+
+            // close the application
+            finish()
+        }
 
         return true
     }
@@ -127,19 +156,6 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         text_user.text = Firebase.auth.currentUser?.email
         val dialog = DialogAdd("User", this, text_user)
         dialog.show()
-    }
-
-    override fun onDestroy() {
-        // finish dictionary manager
-        dictionary_manager.finish()
-
-        // timestamps for all language files on the device
-        val map_timestamps = file_read_write.get_modification_dates(setOf(DictionaryManager.m_file_extension))
-
-        // sync with firebase
-        cloud_firestore.push(map_timestamps, dictionary_manager.m_modified_languages)
-
-        super.onDestroy()
     }
 
     fun button_add_language_on_click(view: View?) {
