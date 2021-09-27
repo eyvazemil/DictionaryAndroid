@@ -163,6 +163,15 @@ class DictionaryManager(private val dir: String) {
         return status
     }
 
+    fun change_language_name(old_lang_name: String, new_lang_name: String): EnumStatus {
+        val status: EnumStatus = m_dictionary.change_language(old_lang_name, new_lang_name)
+
+        if(status == EnumStatus.CHANGE_SUCCESS)
+            m_chosen_title = null
+
+        return status
+    }
+
     fun add_title(title_name: String): EnumStatus {
         val status: EnumStatus = m_dictionary.find_language(m_chosen_language!!)?.add_title(title_name)!!
 

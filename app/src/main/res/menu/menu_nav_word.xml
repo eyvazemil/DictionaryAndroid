@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/group_user"
+        android:checkableBehavior="single">
+
+        <item android:title="Chosen title">
+            <menu>
+                <item
+                    android:id="@+id/chosen_title"
+                    android:title="" />
+            </menu>
+        </item>
+
+    </group>
+
+    <group
+        android:id="@+id/group_user_1"
+        android:checkableBehavior="single">
+
+        <item android:title="Number of words">
+            <menu>
+                <item
+                    android:id="@+id/words_count"
+                    android:title="" />
+            </menu>
+        </item>
+
+    </group>
+
+</menu>

@@ -11,10 +11,11 @@ import com.example.dictionary.R
 
 @SuppressLint("ViewConstructor")
 class ButtonLayoutWord(context: Context, val word: Pair<String, String>,
-                       val scrollable_window: ScrollableWindowInterface) : View(context), PopupMenu.OnMenuItemClickListener
+                            scrollable_window: ScrollableWindowInterface,
+                        ) : ButtonLayoutInterface(context, word.first, scrollable_window)
 {
     @SuppressLint("ResourceAsColor")
-    fun create() : View {
+    override fun create() : View {
         // set word button
         val button_word = Button(context)
         button_word.text = word.first
@@ -22,19 +23,10 @@ class ButtonLayoutWord(context: Context, val word: Pair<String, String>,
 
         // set word button listener
         button_word.setOnClickListener { ti ->
-            button_word_callback(ti)
+            button_callback(ti)
         }
 
         return button_word
-    }
-
-    fun button_word_callback(view: View?) {
-        val pop_up = PopupMenu(context, view)
-        pop_up.setOnMenuItemClickListener { item ->
-            onMenuItemClick(item)
-        }
-        pop_up.inflate(R.menu.menu_edit)
-        pop_up.show()
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {

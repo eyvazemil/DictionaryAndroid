@@ -1,7 +1,6 @@
 package com.example.dictionary
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -14,23 +13,25 @@ import com.example.dictionary.Backend.FileReadWrite
 import com.example.dictionary.Frontend.DialogAdd
 import com.example.dictionary.Miscelaneous.EnumStatus
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import java.io.File
-import android.app.ProgressDialog
-import android.content.Context
-import android.graphics.drawable.GradientDrawable
-import com.bumptech.glide.Glide
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.example.dictionary.Frontend.ActivityOpenerInterface
+import com.example.dictionary.Frontend.ButtonLayoutLanguage
+import com.example.dictionary.Frontend.ScrollableWindowInterface
 import kotlinx.coroutines.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
-    var scroll_languages: LinearLayout? = null
+@RequiresApi(Build.VERSION_CODES.M)
+class MainActivity : ActivityInterface(), ScrollableWindowInterface, ActivityOpenerInterface {
     private lateinit var dir: String
     private lateinit var cloud_firestore: CloudFirestore
     private lateinit var file_read_write: FileReadWrite
+
+    override val menu_layout_id: Int = R.menu.menu_nav_language
+    override val search_dialog_title: String = "language"
+    override val menu_items_values: Map<Int, String> = mapOf()
 
     companion object {
         private const val TAG = "MainActivity"
@@ -42,20 +43,12 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         setContentView(R.layout.activity_main)
 
         // create the directory with languages if it doesn't exist
-        dir = "${filesDir.path}/Languages/${FirebaseAuth.getInstance().currentUser?.email}/"
-        if(!File(dir).exists()) {
-            //Log.d(TAG, FileReadWrite(dir).read_dir(setOf(DictionaryManager.m_file_extension)).toString())
+        dir = "${filesDir.path}/Languages/${CloudFirestore.get_user_email()}/"
+        if(!File(dir).exists())
             File(dir).mkdirs()
-        }
-
-        set_button_log_out()
 
         // initialize file reader and writer to get the language files' last modification time stamps
         file_read_write = FileReadWrite(dir)
-
-        // create a progress dialog that will run till language files are downloaded from firebase
-        val progress_dialog = create_progress_dialog()
-        progress_dialog.show()
 
         Log.d(TAG, "Progress dialog started")
 
@@ -65,102 +58,57 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         cloud_firestore = CloudFirestore(dir)
         cloud_firestore.pull(file_read_write.get_modification_dates(setOf(DictionaryManager.m_file_extension)))
 
-        // destroy progress dialog as firebase language files downloading is complete at this point
-        destroy_progress_dialog(progress_dialog)
-
         // initialize Dictionary Manager object
         dictionary_manager = DictionaryManager(dir)
         dictionary_manager.initialize()
 
         Log.d(TAG, "Dir: $dir")
 
-        // get scroll view reference by id
-        scroll_languages = findViewById(R.id.languages_layout)
+        // get generic views from parent abstract class
+        create()
 
         // get languages list and add them as a button to the layout
         fill_scroll_window()
     }
 
-    fun set_button_log_out() {
-        // get google user photo url
-        val url_photo = FirebaseAuth.getInstance().currentUser?.photoUrl
+    fun button_choose_lang_callback(view: View?) {
+        // get button
+        val button_clicked: Button = view as Button
 
-        // get button for user log out
-        val button_sign_out: ImageButton = findViewById(R.id.button_sign_out)
-
-        // set drawable image with Glide
-        Glide.with(this).load(url_photo).circleCrop().into(button_sign_out)
+        // open chosen language
+        open_activity(button_clicked.text.toString())
     }
 
-    fun create_progress_dialog(): ProgressDialog {
-        val progress_dialog = ProgressDialog(this)
-        progress_dialog.setTitle("Loading")
-        progress_dialog.setMessage("Wait languages are loaded from Firebase...")
-        progress_dialog.setCancelable(false) // disable dismiss by tapping outside of the dialog
+    override fun fill_scroll_window() {
+        // empty scroll window
+        scroll_view.removeAllViews()
 
-        return progress_dialog
-    }
+        // add language button to the scroll window
+        dictionary_manager.get_languages().forEach {
+            val layout_lang = ButtonLayoutLanguage(this, it, this, this)
 
-    fun destroy_progress_dialog(progress_dialog: ProgressDialog) {
-        progress_dialog.dismiss()
-    }
+            // set language listener
+            layout_lang.setOnClickListener { ti ->
+                button_choose_lang_callback(ti)
+            }
 
-    fun button_sign_out_callback(view: View?) {
-        val pop_up = PopupMenu(this, view)
-        pop_up.setOnMenuItemClickListener { item ->
-            onMenuItemClick(item)
-        }
-        pop_up.inflate(R.menu.menu_log_out)
-        pop_up.show()
-    }
-
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        if(item?.itemId == R.id.menu_item_log_out)
-            sign_out()
-        else if(item?.itemId == R.id.menu_item_user)
-            dialog_user()
-        else if(item?.itemId == R.id.menu_item_close) {
-            // finish dictionary manager
-            dictionary_manager.finish()
-
-            // timestamps for all language files on the device
-            val map_timestamps = file_read_write.get_modification_dates(setOf(DictionaryManager.m_file_extension))
-
-            // sync with firebase
-            cloud_firestore.push(map_timestamps, dictionary_manager.m_modified_languages)
-
-            // close the application
-            finish()
-        }
-
-        return true
-    }
-
-    private fun sign_out() {
-        Log.i(TAG, "Sign out")
-
-        AuthUI.getInstance().signOut(this).addOnCompleteListener { task ->
-            if(task.isSuccessful) {
-                Log.i(TAG, "Signed out successfully")
-
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
-            } else
-                Log.w(TAG, "Signing out failed")
+            // add button to the scroll window
+            scroll_view_add_button(layout_lang.create(), background = R.drawable.gradient_button_scroll)
         }
     }
 
-    private fun dialog_user() {
-        val text_user = TextView(this)
-        text_user.text = Firebase.auth.currentUser?.email
-        val dialog = DialogAdd("User", this, text_user)
-        dialog.show()
+    override fun open_activity(name: String) {
+        // choose language in backend
+        dictionary_manager.choose_language(name)
+
+        // create language activity
+        val intent = Intent(this, LanguageActivity::class.java)
+        startActivity(intent)
     }
 
-    fun button_add_language_on_click(view: View?) {
+    override fun button_add_callback(view: View?) {
         // create edit text for dialog
-        val input_text: EditText = EditText(this)
+        val input_text = EditText(this)
         input_text.inputType = InputType.TYPE_TEXT_VARIATION_PERSON_NAME
 
         // create a dialog
@@ -180,7 +128,7 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
                 fill_scroll_window()
 
                 // open language
-                open_language(new_lang_name)
+                open_activity(new_lang_name)
             }
         }
 
@@ -188,41 +136,38 @@ class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         dialog.show()
     }
 
-    fun button_choose_lang_callback(view: View?) {
-        // get button
-        val button_clicked: Button = view as Button
-
-        // open chosen language
-        open_language(button_clicked.text.toString())
+    override fun button_search_callback_helper(search_text: String): Int {
+        return dictionary_manager.get_languages().indexOf(search_text)
     }
 
-    fun fill_scroll_window() {
-        // empty scroll window
-        scroll_languages?.removeAllViews()
+    override fun menu_item_callback(menu_item: MenuItem): Boolean {
+        if(menu_item.itemId == R.id.log_out) {
+            Log.i(TAG, "Sign out")
 
-        // add language button to the scroll window
-        dictionary_manager.get_languages().forEach {
-            val button_lang: Button = Button(applicationContext)
+            AuthUI.getInstance().signOut(this).addOnCompleteListener { task ->
+                if(task.isSuccessful) {
+                    Log.i(TAG, "Signed out successfully")
 
-            //set button text
-            button_lang.text = it
-
-            // set language listener
-            button_lang.setOnClickListener { ti ->
-                button_choose_lang_callback(ti)
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else
+                    Log.w(TAG, "Signing out failed")
             }
+        } else if(menu_item.itemId == R.id.close) {
+            // finish dictionary manager
+            dictionary_manager.finish()
 
-            // add button to the scroll window
-            scroll_languages?.addView(button_lang)
+            // timestamps for all language files on the device
+            val map_timestamps = file_read_write.get_modification_dates(setOf(DictionaryManager.m_file_extension))
+
+            // sync with firebase
+            cloud_firestore.push(map_timestamps, dictionary_manager.m_modified_languages)
+
+            // close the application
+            finish()
         }
-    }
 
-    fun open_language(lang_name: String) {
-        // choose language in backend
-        dictionary_manager.choose_language(lang_name)
-
-        // create language activity
-        val intent = Intent(this, LanguageActivity::class.java)
-        startActivity(intent)
+        return true
     }
 }

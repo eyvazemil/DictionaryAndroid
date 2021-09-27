@@ -12,7 +12,10 @@
     <string name="dialog_word">Word</string>
     <string name="dialog_definition">Definition</string>
     <string name="google_sign_in">Sign in</string>
-    <string name="log_out">Sign out</string>
+    <string name="log_out">Log out</string>
     <string name="profile">Profile</string>
     <string name="close">Close</string>
+    <string name="add">Add</string>
+    <string name="name">Name&#58;</string>
+    <string name="email">Email&#58;</string>
 </resources>

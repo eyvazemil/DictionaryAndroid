@@ -2,7 +2,7 @@ package com.example.dictionary.Backend.DB
 
 import com.example.dictionary.Miscelaneous.EnumStatus
 
-class Language(val m_lang_name: String): LanguageModifier() {
+class Language(var m_lang_name: String): LanguageModifier() {
     var m_map_titles: MutableMap<String, Title> = mutableMapOf()
         get() = field
         private set

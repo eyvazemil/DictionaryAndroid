@@ -26,8 +26,12 @@ class CloudFirestore(val files_dir: String) {
     private val user_email = auth.currentUser?.email!!
     private val set_user_langs: MutableSet<String> = mutableSetOf()
 
-    private companion object {
-        val TAG = "CloudFirestore"
+    companion object {
+        private val TAG = "CloudFirestore"
+
+        fun get_user_img_url() = FirebaseAuth.getInstance().currentUser?.photoUrl
+        fun get_user_name() = FirebaseAuth.getInstance().currentUser?.displayName
+        fun get_user_email() = FirebaseAuth.getInstance().currentUser?.email
     }
 
     fun pull(map_file_timestamps: Map<String, Date>) = runBlocking {

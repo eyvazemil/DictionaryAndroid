@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/group_user"
+        android:checkableBehavior="single">
+
+        <item android:title="Chosen language">
+            <menu>
+                <item
+                    android:id="@+id/chosen_language"
+                    android:title="" />
+            </menu>
+        </item>
+
+    </group>
+
+</menu>

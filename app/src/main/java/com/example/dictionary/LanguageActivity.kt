@@ -1,73 +1,41 @@
 package com.example.dictionary
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.view.MenuItem
+import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import com.example.dictionary.Frontend.ActivityOpenerInterface
 import com.example.dictionary.Frontend.ButtonLayoutTitle
 import com.example.dictionary.Frontend.DialogAdd
 import com.example.dictionary.Frontend.ScrollableWindowInterface
 import com.example.dictionary.Miscelaneous.EnumStatus
 
-class LanguageActivity : AppCompatActivity(), ScrollableWindowInterface, ActivityOpenerInterface {
-    override var scroll_window: LinearLayout? = null
+@RequiresApi(Build.VERSION_CODES.M)
+class LanguageActivity : ActivityInterface(), ScrollableWindowInterface, ActivityOpenerInterface {
+    override val menu_layout_id: Int = R.menu.menu_nav_title
+    override val search_dialog_title: String = "title"
+    override val menu_items_values: Map<Int, String> = mapOf(
+        Pair(R.id.chosen_language, "${MainActivity.dictionary_manager.m_chosen_language}")
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_language)
+        setContentView(R.layout.activity_main)
 
-        // set scrollable window
-        scroll_window = findViewById(R.id.scrollView_titles)
-
-        // get language choose button
-        val button_lang: Button = findViewById(R.id.button3)
-        button_lang.text = MainActivity.dictionary_manager.m_chosen_language
-        button_lang.setOnClickListener {
-            // if button is clicked, finish this activity to get back to main activity
-            finish()
-        }
+        // get generic views from parent abstract class
+        create()
 
         // get titles list and add them as a button to the layout
         fill_scroll_window()
-
-        // get button for adding new titles
-        val button_add_title: Button = findViewById(R.id.button4)
-        button_add_title.setOnClickListener {
-            // create edit text for dialog
-            val input_text: EditText = EditText(this)
-            input_text.inputType = InputType.TYPE_TEXT_VARIATION_PERSON_NAME
-
-            // create a dialog
-            val dialog = DialogAdd("Add new title", this, input_text)
-
-            dialog.dialog.setPositiveButton("Add") { dialogInterface, i ->
-                val new_title_name: String = input_text.text.toString()
-
-                // add new language to the dictionary manager
-                val status: EnumStatus = MainActivity.dictionary_manager.add_title(new_title_name)
-                if (status == EnumStatus.ALREADY_EXISTS)
-                    Toast.makeText(this, "Title $new_title_name already exists", Toast.LENGTH_LONG).show()
-                else {
-                    Toast.makeText(this, "Title $new_title_name was added successfully", Toast.LENGTH_LONG).show()
-
-                    // update scroll window
-                    fill_scroll_window()
-
-                    // open language
-                    open_activity(new_title_name)
-                }
-            }
-
-            // show dialog
-            dialog.show()
-        }
     }
 
     override fun fill_scroll_window() {
         // empty scroll window
-        scroll_window?.removeAllViews()
+        scroll_view.removeAllViews()
 
         // add language button to the scroll window
         MainActivity.dictionary_manager.get_titles().forEach { title_name ->
@@ -75,7 +43,7 @@ class LanguageActivity : AppCompatActivity(), ScrollableWindowInterface, Activit
             val layout_title = ButtonLayoutTitle(this, title_name, this, this)
 
             // add button to the scroll window
-            scroll_window?.addView(layout_title.create())
+            scroll_view_add_button(layout_title.create(), background = R.drawable.gradient_button_scroll)
         }
     }
 
@@ -86,5 +54,46 @@ class LanguageActivity : AppCompatActivity(), ScrollableWindowInterface, Activit
         // create language activity
         val intent = Intent(this, TitleActivity::class.java)
         startActivity(intent)
+    }
+
+    override fun button_add_callback(view: View?) {
+        // create edit text for dialog
+        val input_text = EditText(this)
+        input_text.inputType = InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+
+        // create a dialog
+        val dialog = DialogAdd("Add new title", this, input_text)
+
+        dialog.dialog.setPositiveButton("Add") { dialogInterface, i ->
+            val new_title_name: String = input_text.text.toString()
+
+            // add new language to the dictionary manager
+            val status: EnumStatus = MainActivity.dictionary_manager.add_title(new_title_name)
+            if (status == EnumStatus.ALREADY_EXISTS)
+                Toast.makeText(this, "Title $new_title_name already exists", Toast.LENGTH_LONG).show()
+            else {
+                Toast.makeText(this, "Title $new_title_name was added successfully", Toast.LENGTH_LONG).show()
+
+                // update scroll window
+                fill_scroll_window()
+
+                // open language
+                open_activity(new_title_name)
+            }
+        }
+
+        // show dialog
+        dialog.show()
+    }
+
+    override fun button_search_callback_helper(search_text: String): Int {
+        return MainActivity.dictionary_manager.get_titles().indexOf(search_text)
+    }
+
+    override fun menu_item_callback(menu_item: MenuItem): Boolean {
+        if(menu_item.itemId == R.id.chosen_language)
+            finish()
+
+        return true
     }
 }
