@@ -93,7 +93,7 @@ class MainActivity : ActivityInterface(), ScrollableWindowInterface, ActivityOpe
             }
 
             // add button to the scroll window
-            scroll_view_add_button(layout_lang.create(), background = R.drawable.gradient_button_scroll)
+            scroll_view_add_button(layout_lang.create(), flag_background = true)
         }
     }
 

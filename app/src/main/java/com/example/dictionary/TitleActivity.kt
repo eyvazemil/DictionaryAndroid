@@ -14,7 +14,7 @@ import com.example.dictionary.Miscelaneous.EnumStatus
 class TitleActivity : ActivityInterface(), ScrollableWindowInterface {
     override val menu_layout_id: Int = R.menu.menu_nav_word
     override val search_dialog_title: String = "word"
-    override val menu_items_values: Map<Int, String> = mapOf(
+    override val menu_items_values: MutableMap<Int, String> = mutableMapOf(
         Pair(R.id.chosen_title, "${if(MainActivity.dictionary_manager.m_chosen_title == "") "<None>"
                                         else MainActivity.dictionary_manager.m_chosen_title
                                     }"
@@ -50,6 +50,7 @@ class TitleActivity : ActivityInterface(), ScrollableWindowInterface {
             // create layout parameters for an edit button
             val param_button_num = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             param_button_num.width = LinearLayout.LayoutParams.WRAP_CONTENT
+            param_button_num.setMargins(0, 0, 5, 0)
 
             // create text view for word number
             val button_word_num = Button(this)
@@ -61,8 +62,8 @@ class TitleActivity : ActivityInterface(), ScrollableWindowInterface {
             layout_word.layoutParams = param_button_word
 
             // set background colours for buttons
-            button_word_num.setBackgroundResource(R.drawable.gradient_button_scroll)
-            layout_word.setBackgroundResource(R.drawable.gradient_button_scroll)
+            button_word_num.setBackgroundResource(background)
+            layout_word.setBackgroundResource(background)
 
             // add word number and word to the layout
             layout.addView(button_word_num)
@@ -73,6 +74,10 @@ class TitleActivity : ActivityInterface(), ScrollableWindowInterface {
 
             word_num++
         }
+
+        // change the words number in this title
+        menu_items_values.put(R.id.words_count, "${word_num - 1}")
+        update_navigation_menu()
     }
 
     override fun button_add_callback(view: View?) {

@@ -43,7 +43,7 @@ class LanguageActivity : ActivityInterface(), ScrollableWindowInterface, Activit
             val layout_title = ButtonLayoutTitle(this, title_name, this, this)
 
             // add button to the scroll window
-            scroll_view_add_button(layout_title.create(), background = R.drawable.gradient_button_scroll)
+            scroll_view_add_button(layout_title.create(), flag_background = true)
         }
     }
 

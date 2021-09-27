@@ -33,8 +33,9 @@ abstract class ActivityInterface : AppCompatActivity() {
     lateinit var navigation: NavigationView
     private lateinit var drawer_layout: DrawerLayout
 
-    private companion object {
-        val TAG = "ActivityInterface"
+    companion object {
+        private val TAG = "ActivityInterface"
+        val background: Int = R.drawable.gradient_button_scroll
     }
 
     abstract val menu_layout_id: Int
@@ -101,16 +102,20 @@ abstract class ActivityInterface : AppCompatActivity() {
         // set navigation drawer menu
         navigation.inflateMenu(menu_layout_id)
 
-        menu_items_values.forEach {
-            navigation.menu.findItem(it.key).title = it.value
-        }
+        update_navigation_menu()
 
         navigation.setNavigationItemSelectedListener { menu_item ->
             menu_item_callback(menu_item)
         }
     }
 
-    fun scroll_view_add_button(button: View, existing_layout_params: LinearLayout.LayoutParams? = null, background: Int? = null) {
+    fun update_navigation_menu() {
+        menu_items_values.forEach {
+            navigation.menu.findItem(it.key).title = it.value
+        }
+    }
+
+    fun scroll_view_add_button(button: View, existing_layout_params: LinearLayout.LayoutParams? = null, flag_background: Boolean = false) {
         val layout_params = existing_layout_params ?: LinearLayout.LayoutParams(
                                                         LinearLayout.LayoutParams. MATCH_PARENT,
                                                         LinearLayout.LayoutParams. WRAP_CONTENT
@@ -121,7 +126,7 @@ abstract class ActivityInterface : AppCompatActivity() {
         button.layoutParams = layout_params
 
         // set button background
-        if(background != null)
+        if(flag_background)
             button.setBackgroundResource(background)
 
         // add button to the linear layout
