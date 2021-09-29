@@ -95,6 +95,9 @@ class CloudFirestore(val files_dir: String) {
         // create a map from modified languages, languages that aren't even in the firebase
         val map_langs_for_uploading: MutableMap<String, Date> = mutableMapOf()
 
+        // languages that must be removed from the firebase storage
+        val list_remove_langs: MutableList<String> = mutableListOf()
+
         map_file_timestamps.forEach {
             if(!map_langs_for_uploading.contains(it.key) &&
                 (!set_user_langs.contains(it.key) || modified_languages.contains(it.key))
@@ -106,10 +109,18 @@ class CloudFirestore(val files_dir: String) {
             data_langs.put(it.key, Timestamp(it.value))
         }
 
+        set_user_langs.forEach { lang_name ->
+            if(!data_langs.contains(lang_name))
+                list_remove_langs.add(lang_name)
+        }
+
         Log.d(TAG, "Data langs: $data_langs")
 
         Log.d(TAG, "Files to be uploaded: $map_langs_for_uploading")
 
+        Log.d(TAG, "Files to be removed: $list_remove_langs")
+
+        // upload language files to firebase storage
         GlobalScope.launch {
             // traverse through modified languages and add files to the cloud storage
             for(lang_time_stamp in map_langs_for_uploading) {
@@ -139,6 +150,15 @@ class CloudFirestore(val files_dir: String) {
             db.collection("users").document(user_email).set(data_langs).await()
 
             Log.d(TAG, "Email: $user_email")
+        }
+
+        // remove language files from firebase storage
+        GlobalScope.launch {
+            for(lang_name in list_remove_langs) {
+                val file_lang = "$lang_name${DictionaryManager.m_file_extension}"
+                val storage_ref = storage.reference.child("${user_email}/$file_lang")
+                storage_ref.delete().await()
+            }
         }
     }
 }
