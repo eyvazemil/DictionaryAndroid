@@ -65,6 +65,10 @@ class FileReadWrite(private val dir: String) {
         return file_names
     }
 
+    fun remove_file(file_name: String) {
+        File("${dir}${file_name}${DictionaryManager.m_file_extension}").delete()
+    }
+
     fun get_modification_dates(allowed_extensions: Set<String>? = null): Map<String, Date> {
         val map_files: MutableMap<String, Date> = mutableMapOf()
 

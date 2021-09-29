@@ -37,6 +37,14 @@ class DictionaryManager(private val dir: String) {
         // if any language is open and modified, write it into the file
         if(m_chosen_language != null && m_dictionary.find_language(m_chosen_language!!)?.m_flag_modified!!)
             close_file(m_chosen_language!!)
+
+        // remove all the language files that are not in the map of languages
+        file_read_write.read_dir(setOf(m_file_extension)).forEach { lang_name ->
+            if(!m_dictionary.m_map_languages.contains(lang_name)) {
+                file_read_write.remove_file(lang_name)
+                Log.d(TAG, "Language to download: $lang_name")
+            }
+        }
     }
 
     private fun open_file(lang_name: String) {
@@ -166,8 +174,11 @@ class DictionaryManager(private val dir: String) {
     fun change_language_name(old_lang_name: String, new_lang_name: String): EnumStatus {
         val status: EnumStatus = m_dictionary.change_language(old_lang_name, new_lang_name)
 
-        if(status == EnumStatus.CHANGE_SUCCESS)
+        if(status == EnumStatus.CHANGE_SUCCESS) {
+            // set new language as chosen one
+            m_chosen_language = new_lang_name
             m_chosen_title = null
+        }
 
         return status
     }
