@@ -10,21 +10,16 @@ import android.widget.*
 import com.example.dictionary.Backend.CloudFirestore
 import com.example.dictionary.Backend.DictionaryManager
 import com.example.dictionary.Backend.FileReadWrite
-import com.example.dictionary.Frontend.DialogAdd
 import com.example.dictionary.Miscelaneous.EnumStatus
 import com.firebase.ui.auth.AuthUI
 import java.io.File
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.dictionary.Frontend.ActivityOpenerInterface
-import com.example.dictionary.Frontend.ButtonLayoutLanguage
-import com.example.dictionary.Frontend.ScrollableWindowInterface
-import kotlinx.coroutines.*
-import java.util.*
+import com.example.dictionary.Frontend.*
 
 
 @RequiresApi(Build.VERSION_CODES.M)
-class MainActivity : ActivityInterface(), ScrollableWindowInterface, ActivityOpenerInterface {
+class MainActivity : ActivityInterface(), NavigationInterface, ButtonToolbarHamburger, ScrollableWindowInterface, ActivityOpenerInterface {
     private lateinit var dir: String
     private lateinit var cloud_firestore: CloudFirestore
     private lateinit var file_read_write: FileReadWrite
@@ -65,7 +60,13 @@ class MainActivity : ActivityInterface(), ScrollableWindowInterface, ActivityOpe
         Log.d(TAG, "Dir: $dir")
 
         // get generic views from parent abstract class
-        create()
+        create("Dictionary")
+
+        // get navigation view
+        create_navigation(this)
+
+        // get hamburger button
+        create_button_toolbar_hamburger(this)
 
         // get languages list and add them as a button to the layout
         fill_scroll_window()

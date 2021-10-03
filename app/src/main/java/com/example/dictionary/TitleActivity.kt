@@ -1,8 +1,8 @@
 package com.example.dictionary
 
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -11,23 +11,25 @@ import com.example.dictionary.Frontend.*
 import com.example.dictionary.Miscelaneous.EnumStatus
 
 @RequiresApi(Build.VERSION_CODES.M)
-class TitleActivity : ActivityInterface(), ScrollableWindowInterface {
-    override val menu_layout_id: Int = R.menu.menu_nav_word
+class TitleActivity : ActivityInterface(), ButtonToolbarBack, ScrollableWindowInterface {
     override val search_dialog_title: String = "word"
-    override val menu_items_values: MutableMap<Int, String> = mutableMapOf(
-        Pair(R.id.chosen_title, "${if(MainActivity.dictionary_manager.m_chosen_title == "") "<None>"
-                                        else MainActivity.dictionary_manager.m_chosen_title
-                                    }"
-        ),
-        Pair(R.id.words_count, "${MainActivity.dictionary_manager.get_words_count()}")
-    )
+
+    companion object {
+        private val TAG = "TitleActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // get generic views from parent abstract class
-        create()
+        create(
+            if(MainActivity.dictionary_manager.m_chosen_title!! == "") "<None>"
+            else MainActivity.dictionary_manager.m_chosen_title!!
+        )
+
+        // get toolbar back button
+        create_button_toolbar_back(this)
 
         // get titles list and add them as a button to the layout
         fill_scroll_window()
@@ -74,10 +76,6 @@ class TitleActivity : ActivityInterface(), ScrollableWindowInterface {
 
             word_num++
         }
-
-        // change the words number in this title
-        menu_items_values.put(R.id.words_count, "${word_num - 1}")
-        update_navigation_menu()
     }
 
     override fun button_add_callback(view: View?) {
@@ -118,10 +116,7 @@ class TitleActivity : ActivityInterface(), ScrollableWindowInterface {
         return word_pos
     }
 
-    override fun menu_item_callback(menu_item: MenuItem): Boolean {
-        if(menu_item.itemId == R.id.chosen_title)
-            finish()
-
-        return true
+    override fun button_toolbar_back_callback(view: View?) {
+        this.finish()
     }
 }

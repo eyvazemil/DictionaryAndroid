@@ -8,26 +8,22 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
-import com.example.dictionary.Frontend.ActivityOpenerInterface
-import com.example.dictionary.Frontend.ButtonLayoutTitle
-import com.example.dictionary.Frontend.DialogAdd
-import com.example.dictionary.Frontend.ScrollableWindowInterface
+import com.example.dictionary.Frontend.*
 import com.example.dictionary.Miscelaneous.EnumStatus
 
 @RequiresApi(Build.VERSION_CODES.M)
-class LanguageActivity : ActivityInterface(), ScrollableWindowInterface, ActivityOpenerInterface {
-    override val menu_layout_id: Int = R.menu.menu_nav_title
+class LanguageActivity : ActivityInterface(), ButtonToolbarBack, ScrollableWindowInterface, ActivityOpenerInterface {
     override val search_dialog_title: String = "title"
-    override val menu_items_values: Map<Int, String> = mapOf(
-        Pair(R.id.chosen_language, "${MainActivity.dictionary_manager.m_chosen_language}")
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // get generic views from parent abstract class
-        create()
+        create(MainActivity.dictionary_manager.m_chosen_language!!)
+
+        // get toolbar back button
+        create_button_toolbar_back(this)
 
         // get titles list and add them as a button to the layout
         fill_scroll_window()
@@ -90,10 +86,7 @@ class LanguageActivity : ActivityInterface(), ScrollableWindowInterface, Activit
         return MainActivity.dictionary_manager.get_titles().indexOf(search_text)
     }
 
-    override fun menu_item_callback(menu_item: MenuItem): Boolean {
-        if(menu_item.itemId == R.id.chosen_language)
-            finish()
-
-        return true
+    override fun button_toolbar_back_callback(view: View?) {
+        this.finish()
     }
 }
